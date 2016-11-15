@@ -1,0 +1,58 @@
+#! /usr/bin python
+# -*- coding: utf-8 -*-
+"""
+***********************************************************************************************************************
+                                              garbage-collector
+
+A very simple daemon to test the utilities/daemon.py class.
+This daemon checks every 30 seconds if any file is inside a temporary folder,
+that needs to be empty from day 16 to end of every month.
+If any file is discovered, it's renamed and moved into another fixed folder.
+The main script receives a parameter specifying where the config.cfg is and uses argparse library to get it.
+***********************************************************************************************************************
+"""
+import os, ConfigParser, sys, time, argparse
+from datetime import datetime
+from utilities import daemon
+
+class GarbageCollector(daemon.Daemon):
+
+	def __init__(self, config_path, pidfile):
+	    super(self.__class__, self).__init__(pidfile)
+
+        self.conf = ConfigParser.ConfigParser()
+        self.conf.read(config_path)
+	
+	def check():
+		pass # TODO
+	
+	def run(self):
+		while True:
+			
+			check()
+            
+
+            time.sleep(30)
+		
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser(description='Controls the Garbage Collector Daemon.')
+    parser.add_argument('action', choices=('start', 'stop', 'restart'))
+    parser.add_argument('-f', '--config',  help='Path to the config.cfg file.')
+    parser.add_argument("-p", "--pidfile", help="Path to the pid file with the process id number.")
+    parser.set_defaults(config=os.path.join( os.getcwd(), 'etc', 'config.cfg'))
+    parser.set_defaults(pidfile=os.path.join( os.getcwd(), 'etc', 'garbage_collector_daemon.pid'))
+
+    options = parser.parse_args()
+    ruta_config = options.config
+    pidfile = options.pidfile
+    action = options.action
+
+    garbage_collector_daemon = GarbageCollector(config_path, pidfile)
+    if action == 'start':
+        garbage_collector_daemon.start()
+    elif action== 'stop':
+        garbage_collector_daemon.stop()
+    elif action == 'restart':
+        garbage_collector_daemon.restart()
+
+    sys.exit(0)
